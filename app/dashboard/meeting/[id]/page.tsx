@@ -58,36 +58,68 @@ export default function MeetingPage() {
 
   if (error) {
     return (
-      <div className="container mx-auto p-6">
-        <button onClick={handleGoBack} className="mb-4 flex items-center text-purple-500 hover:text-purple-700">
-          <ArrowLeft className="mr-2" size={20} />
-          Back to Dashboard
-        </button>
-        <div className="text-red-500">{error}</div>
+      <div className="min-h-screen bg-gradient-to-br from-[#341539] via-[#301934] to-[#341539]">
+        <header className="sticky top-0 z-30 backdrop-blur-md bg-[#301934]/80 border-b border-white/5">
+          <div className="container mx-auto px-6 h-16 flex items-center">
+            <h1 className="text-2xl font-light tracking-wider text-white">A.R.I.S.E</h1>
+          </div>
+        </header>
+        <div className="container mx-auto px-6 py-8">
+          <button 
+            onClick={handleGoBack} 
+            className="mb-6 flex items-center text-white/70 hover:text-white transition-colors font-light"
+          >
+            <ArrowLeft className="mr-2" size={20} />
+            Back to Dashboard
+          </button>
+          <div className="bg-red-500/10 border border-red-500/20 rounded-lg p-6 text-red-300 font-light">
+            {error}
+          </div>
+        </div>
       </div>
     );
   }
 
   if (!data) {
     return (
-      <div className="container mx-auto p-6">
-        <button onClick={handleGoBack} className="mb-4 flex items-center text-purple-500 hover:text-purple-700">
-          <ArrowLeft className="mr-2" size={20} />
-          Back to Dashboard
-        </button>
-        Loading...
+      <div className="min-h-screen bg-gradient-to-br from-[#341539] via-[#301934] to-[#341539]">
+        <header className="sticky top-0 z-30 backdrop-blur-md bg-[#301934]/80 border-b border-white/5">
+          <div className="container mx-auto px-6 h-16 flex items-center">
+            <h1 className="text-2xl font-light tracking-wider text-white">A.R.I.S.E</h1>
+          </div>
+        </header>
+        <div className="container mx-auto px-6 py-8">
+          <button 
+            onClick={handleGoBack} 
+            className="mb-6 flex items-center text-white/70 hover:text-white transition-colors font-light"
+          >
+            <ArrowLeft className="mr-2" size={20} />
+            Back to Dashboard
+          </button>
+          <div className="text-white/70 font-light">Loading...</div>
+        </div>
       </div>
     );
   }
 
   console.log("Rendering MeetingDetails with data:", data);
   return (
-    <div className="container mx-auto p-6">
-      <button onClick={handleGoBack} className="mb-4 flex items-center text-purple-500 hover:text-purple-700">
-        <ArrowLeft className="mr-2" size={20} />
-        Back to Dashboard
-      </button>
-      <MeetingDetails data={data} />
+    <div className="min-h-screen bg-gradient-to-br from-[#341539] via-[#301934] to-[#341539]">
+      <header className="sticky top-0 z-30 backdrop-blur-md bg-[#301934]/80 border-b border-white/5">
+        <div className="container mx-auto px-6 h-16 flex items-center">
+          <h1 className="text-2xl font-light tracking-wider text-white">A.R.I.S.E</h1>
+        </div>
+      </header>
+      <div className="container mx-auto px-6 py-8">
+        <button 
+          onClick={handleGoBack} 
+          className="mb-6 flex items-center text-white/70 hover:text-white transition-colors font-light"
+        >
+          <ArrowLeft className="mr-2" size={20} />
+          Back to Dashboard
+        </button>
+        <MeetingDetails data={data} />
+      </div>
     </div>
   );
 }

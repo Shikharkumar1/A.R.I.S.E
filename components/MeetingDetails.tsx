@@ -89,53 +89,67 @@ export default function MeetingDetails({ data }: MeetingDetailsProps) {
   }
 
   return (
-    <div className="container mx-auto p-6 bg-background">
-      <div className="flex justify-between items-center mb-4">
-        <h1 className="text-3xl font-bold">{data.name}</h1>
+    <div className="space-y-6">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+        <div>
+          <h1 className="text-3xl font-light text-white mb-2">{data.name}</h1>
+          <p className="text-white/50 font-light">{data.description}</p>
+        </div>
         <button
           onClick={handleExport}
-          className="flex items-center px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+          className="flex items-center px-5 py-2.5 bg-white/10 hover:bg-white/20 backdrop-blur-sm text-white rounded-lg border border-white/20 transition-all font-light"
         >
           <Download className="w-5 h-5 mr-2" />
           Export as DOCX
         </button>
       </div>
-      <p className="text-muted-foreground mb-6">{data.description}</p>
-      <Tabs defaultValue="summary" className="space-y-4">
-        <TabsList>
-          <TabsTrigger value="summary">Summary</TabsTrigger>
-          <TabsTrigger value="details">Details</TabsTrigger>
+      
+      <Tabs defaultValue="summary" className="space-y-6">
+        <TabsList className="bg-white/5 backdrop-blur-sm border border-white/10 p-1">
+          <TabsTrigger 
+            value="summary" 
+            className="data-[state=active]:bg-white/20 data-[state=active]:text-white text-white/60 font-light"
+          >
+            Summary
+          </TabsTrigger>
+          <TabsTrigger 
+            value="details"
+            className="data-[state=active]:bg-white/20 data-[state=active]:text-white text-white/60 font-light"
+          >
+            Details
+          </TabsTrigger>
         </TabsList>
-        <TabsContent value="summary">
-          <div className="space-y-6">
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <FileText className="w-5 h-5" />
-                  <span>Summary</span>
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p>{data.summary}</p>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <FileText className="w-5 h-5" />
-                  <span>Transcript</span>
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <ScrollArea className="h-[300px]">
-                  <p>{data.transcript}</p>
-                </ScrollArea>
-              </CardContent>
-            </Card>
-          </div>
+        
+        <TabsContent value="summary" className="space-y-6 mt-6">
+          <Card className="bg-white/5 backdrop-blur-sm border-white/10">
+            <CardHeader className="border-b border-white/5">
+              <CardTitle className="flex items-center gap-2 text-white font-light text-xl">
+                <FileText className="w-5 h-5" />
+                <span>Summary</span>
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="pt-6">
+              <p className="text-white/70 font-light leading-relaxed">{data.summary}</p>
+            </CardContent>
+          </Card>
+          
+          <Card className="bg-white/5 backdrop-blur-sm border-white/10">
+            <CardHeader className="border-b border-white/5">
+              <CardTitle className="flex items-center gap-2 text-white font-light text-xl">
+                <FileText className="w-5 h-5" />
+                <span>Transcript</span>
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="pt-6">
+              <ScrollArea className="h-[300px] rounded-lg bg-white/5 p-4">
+                <p className="text-white/60 font-light leading-relaxed whitespace-pre-wrap">{data.transcript}</p>
+              </ScrollArea>
+            </CardContent>
+          </Card>
         </TabsContent>
-        <TabsContent value="details">
-          <div className="grid grid-cols-4 gap-6">
+        
+        <TabsContent value="details" className="mt-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             {categories.map((category, index) => (
               <motion.div
                 key={category.title}

@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { motion } from 'framer-motion'
-import { Mic, FileAudio, Brain, Clock, CheckCircle } from 'lucide-react'
+import { FileAudio, Brain, CheckCircle, ArrowRight } from 'lucide-react'
 
 export default function Home() {
   const [isVisible, setIsVisible] = useState(false)
@@ -18,78 +18,94 @@ export default function Home() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-black to-blue-900 text-white">
-      <header className="container mx-auto px-4 py-6 flex justify-between items-center">
+    <div className="min-h-screen bg-gradient-to-br from-[#301934] via-[#341539] to-[#301934] text-white">
+      {/* Header */}
+      <header className="container mx-auto px-6 py-8 flex justify-between items-center">
         <div className="flex items-center space-x-2">
-          <Mic className="w-8 h-8 text-blue-400" />
-          <span className="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-blue-600">MeetingMind</span>
+          <span className="text-3xl font-light tracking-wider text-white">A.R.I.S.E</span>
         </div>
         <nav>
-          <Link href="/dashboard" className="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-bold py-2 px-4 rounded-full transition duration-300">
+          <Link href="/dashboard" className="bg-white/10 hover:bg-white/20 backdrop-blur-sm text-white font-medium py-2.5 px-6 rounded-lg transition-all duration-300 border border-white/20">
             Try It Now
           </Link>
         </nav>
       </header>
 
-      <main className="container mx-auto px-4">
-        <section className="py-20 text-center">
-          <motion.h1
-            className="text-5xl md:text-6xl font-bold mb-6 text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-blue-600"
+      <main className="container mx-auto px-6">
+        {/* Hero Section */}
+        <section className="py-32 text-center max-w-5xl mx-auto">
+          <motion.div
+            className="mb-4"
             initial="hidden"
             animate={isVisible ? "visible" : "hidden"}
             variants={fadeIn}
             transition={{ duration: 0.5 }}
           >
-            Transform Your Meetings with AI
+            <span className="text-sm font-medium tracking-widest text-white/60 uppercase">
+              Automated Recovery of Insight and Structured Execution
+            </span>
+          </motion.div>
+          <motion.h1
+            className="text-6xl md:text-7xl font-light mb-8 text-white leading-tight"
+            initial="hidden"
+            animate={isVisible ? "visible" : "hidden"}
+            variants={fadeIn}
+            transition={{ duration: 0.5, delay: 0.1 }}
+          >
+            Your meetings,
+            <br />
+            <span className="font-normal">intelligently organized</span>
           </motion.h1>
           <motion.p
-            className="text-xl md:text-2xl mb-12 text-blue-200"
+            className="text-xl md:text-2xl mb-12 text-white/70 font-light max-w-3xl mx-auto"
             initial="hidden"
             animate={isVisible ? "visible" : "hidden"}
             variants={fadeIn}
             transition={{ duration: 0.5, delay: 0.2 }}
           >
-            Capture, analyze, and act on your meeting insights effortlessly
+            Transform audio into actionable insights with AI-powered transcription and analysis
           </motion.p>
           <motion.div
+            className="flex items-center justify-center gap-4"
             initial="hidden"
             animate={isVisible ? "visible" : "hidden"}
             variants={fadeIn}
-            transition={{ duration: 0.5, delay: 0.4 }}
+            transition={{ duration: 0.5, delay: 0.3 }}
           >
-            <Link href="/dashboard" className="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-bold py-3 px-8 rounded-full text-lg transition duration-300">
+            <Link href="/dashboard" className="group bg-white text-[#301934] hover:bg-white/90 font-medium py-4 px-8 rounded-lg text-lg transition-all duration-300 flex items-center gap-2">
               Get Started
+              <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
             </Link>
           </motion.div>
         </section>
 
-        <section className="py-20">
-          <h2 className="text-3xl font-bold mb-12 text-center text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-blue-600">How It Works</h2>
-          <div className="grid md:grid-cols-3 gap-8">
+        {/* Features Section */}
+        <section className="py-20 max-w-6xl mx-auto">
+          <div className="grid md:grid-cols-3 gap-6">
             {[
-              { icon: FileAudio, title: "Upload Audio", description: "Simply upload your meeting recording" },
-              { icon: Brain, title: "AI Analysis", description: "Our AI processes and extracts key information" },
-              { icon: CheckCircle, title: "Get Insights", description: "Review tasks, decisions, and action items" }
+              { icon: FileAudio, title: "Upload Audio", description: "Drop your meeting recording and let AI do the work" },
+              { icon: Brain, title: "AI Analysis", description: "Advanced processing extracts key insights instantly" },
+              { icon: CheckCircle, title: "Get Insights", description: "Access organized tasks, decisions, and action items" }
             ].map((step, index) => (
               <motion.div
                 key={index}
-                className="bg-gradient-to-br from-black to-blue-800 p-6 rounded-lg text-center border border-blue-500"
+                className="bg-white/5 backdrop-blur-sm p-8 rounded-2xl border border-white/10 hover:bg-white/10 transition-all duration-300"
                 initial="hidden"
                 animate={isVisible ? "visible" : "hidden"}
                 variants={fadeIn}
-                transition={{ duration: 0.5, delay: 0.2 * index }}
+                transition={{ duration: 0.5, delay: 0.1 * index }}
               >
-                <step.icon className="w-12 h-12 mx-auto mb-4 text-blue-400" />
-                <h3 className="text-xl font-semibold mb-2 text-blue-200">{step.title}</h3>
-                <p className="text-blue-300">{step.description}</p>
+                <step.icon className="w-10 h-10 mb-4 text-white/80" strokeWidth={1.5} />
+                <h3 className="text-xl font-medium mb-3 text-white">{step.title}</h3>
+                <p className="text-white/60 font-light leading-relaxed">{step.description}</p>
               </motion.div>
             ))}
           </div>
         </section>
 
-        <section className="py-20">
-          <h2 className="text-3xl font-bold mb-12 text-center text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-blue-600">Benefits</h2>
-          <div className="grid md:grid-cols-2 gap-8">
+        {/* Benefits Section */}
+        <section className="py-20 max-w-6xl mx-auto pb-32">
+          <div className="grid md:grid-cols-2 gap-6">
             {[
               { title: "Save Time", description: "Automatically extract key information from your meetings" },
               { title: "Increase Productivity", description: "Focus on action items and decisions, not note-taking" },
@@ -98,23 +114,24 @@ export default function Home() {
             ].map((benefit, index) => (
               <motion.div
                 key={index}
-                className="bg-gradient-to-br from-black to-blue-800 p-6 rounded-lg border border-blue-500"
+                className="bg-white/5 backdrop-blur-sm p-8 rounded-2xl border border-white/10 hover:bg-white/10 transition-all duration-300"
                 initial="hidden"
                 animate={isVisible ? "visible" : "hidden"}
                 variants={fadeIn}
-                transition={{ duration: 0.5, delay: 0.2 * index }}
+                transition={{ duration: 0.5, delay: 0.1 * index }}
               >
-                <h3 className="text-xl font-semibold mb-2 text-blue-200">{benefit.title}</h3>
-                <p className="text-blue-300">{benefit.description}</p>
+                <h3 className="text-xl font-medium mb-3 text-white">{benefit.title}</h3>
+                <p className="text-white/60 font-light leading-relaxed">{benefit.description}</p>
               </motion.div>
             ))}
           </div>
         </section>
       </main>
 
-      <footer className="bg-black py-8 mt-20">
-        <div className="container mx-auto px-4 text-center text-blue-300">
-          <p>&copy; 2024 MeetingMind. All rights reserved.</p>
+      {/* Footer */}
+      <footer className="border-t border-white/10 py-8">
+        <div className="container mx-auto px-6 text-center text-white/40 font-light">
+          <p>&copy; 2025 A.R.I.S.E. All rights reserved.</p>
         </div>
       </footer>
     </div>
