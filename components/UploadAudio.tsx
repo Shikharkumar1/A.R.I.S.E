@@ -5,11 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardHeader, CardTitle, CardContent, CardDescription } from "@/components/ui/card";
-import { useToast } from "@/hooks/use-toast"
-import { FFmpeg } from '@ffmpeg/ffmpeg';
-import { fetchFile } from '@ffmpeg/util';
-
-const ffmpeg = new FFmpeg();
+import { useToast } from "@/hooks/use-toast";
 
 interface MonitoredFile {
   name: string;
@@ -19,9 +15,7 @@ interface MonitoredFile {
 
 const UploadAudio: React.FC<{ onUploadSuccess: () => void }> = ({ onUploadSuccess }) => {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
-  const [isCompressing, setIsCompressing] = useState(false);
   const [isTranscribing, setIsTranscribing] = useState(false);
-  const [compressedFile, setCompressedFile] = useState<File | null>(null);
   const [monitoredFiles, setMonitoredFiles] = useState<MonitoredFile[]>([]);
   const { toast } = useToast();
 
@@ -47,7 +41,6 @@ const UploadAudio: React.FC<{ onUploadSuccess: () => void }> = ({ onUploadSucces
     const file = event.target.files?.[0];
     if (file) {
       setSelectedFile(file);
-      setCompressedFile(null);
     }
   };
 
@@ -58,7 +51,6 @@ const UploadAudio: React.FC<{ onUploadSuccess: () => void }> = ({ onUploadSucces
         const blob = await response.blob();
         const file = new File([blob], fileName, { type: blob.type });
         setSelectedFile(file);
-        setCompressedFile(null);
       }
     } catch (error) {
       console.error('Error selecting monitored file:', error);
@@ -70,86 +62,39 @@ const UploadAudio: React.FC<{ onUploadSuccess: () => void }> = ({ onUploadSucces
     }
   };
 
-  const loadFFmpeg = async () => {
-    if (!ffmpeg.loaded) {
-      await ffmpeg.load();
-    }
-  };
-
-  const compressAudio = async () => {
-    if (!selectedFile) return;
-    setIsCompressing(true);
-    try {
-      await loadFFmpeg();
-      await ffmpeg.writeFile('input_audio', await fetchFile(selectedFile));
-
-      // Set target bitrate to reduce file size
-      // Adjust parameters as needed
-      await ffmpeg.exec([
-        '-i',
-        'input_audio',
-        '-ar',
-        '16000',
-        '-ac',
-        '1',
-        '-b:a',
-        '16k',
-        'output_audio.mp3'
-      ]);
-
-      const data = await ffmpeg.readFile('output_audio.mp3');
-      const compressedBlob = new Blob([data as BlobPart], { type: 'audio/mpeg' });
-      const compressed = new File([compressedBlob], `compressed_${selectedFile.name}`, {
-        type: 'audio/mpeg',
-      });
-
-      setCompressedFile(compressed);
-      toast({
-        title: 'Compression Successful',
-        description: `File size reduced to ${(compressed.size / (1024 * 1024)).toFixed(2)} MB`,
-      });
-    } catch (error) {
-      console.error('Compression error:', error);
-      toast({
-        title: 'Compression Failed',
-        description: 'An error occurred while compressing the audio.',
-        variant: 'destructive',
-      });
-    } finally {
-      setIsCompressing(false);
-    }
-  };
-
   const handleTranscribe = async () => {
-    const fileToUpload = compressedFile || selectedFile;
-    if (!fileToUpload) return;
+    if (!selectedFile) return;
 
     setIsTranscribing(true);
     const formData = new FormData();
-    formData.append('audio', fileToUpload);
-    formData.append('fullPath', fileToUpload.name);
+    formData.append('audio', selectedFile);
+    formData.append('fullPath', selectedFile.name);
 
     try {
-      await fetch('/api/transcribe', {
+      const response = await fetch('/api/transcribe', {
         method: 'POST',
         body: formData,
       });
+
+      if (!response.ok) {
+        throw new Error('Transcription failed');
+      }
+
       toast({
-        title: 'Transcription Started',
-        description: 'Your audio is being transcribed.',
+        title: 'Success!',
+        description: 'Your audio has been transcribed successfully.',
       });
       onUploadSuccess();
+      setSelectedFile(null);
     } catch (error) {
       console.error('Transcription error:', error);
       toast({
         title: 'Transcription Failed',
-        description: 'An error occurred while transcribing the audio.',
+        description: 'An error occurred while transcribing the audio. Please try again.',
         variant: 'destructive',
       });
     } finally {
       setIsTranscribing(false);
-      setSelectedFile(null);
-      setCompressedFile(null);
     }
   };
 
@@ -157,16 +102,12 @@ const UploadAudio: React.FC<{ onUploadSuccess: () => void }> = ({ onUploadSucces
     return file ? file.size / (1024 ** 2) : 0;
   };
 
-  const isCompressionNeeded = selectedFile && getFileSizeMB(selectedFile) > 24;
-  const isTranscribeDisabled =
-    (selectedFile && getFileSizeMB(selectedFile) > 24 && (!compressedFile || getFileSizeMB(compressedFile) > 24)) ||
-    isCompressing ||
-    isTranscribing;
+  const isTranscribeDisabled = !selectedFile || isTranscribing || getFileSizeMB(selectedFile) > 25;
 
   return (
-    <Card className="bg-white/5 backdrop-blur-sm border-white/10 shadow-2xl">
-      <CardHeader className="border-b border-white/5 pb-6">
-        <CardTitle className="text-2xl font-light text-white">Upload Audio</CardTitle>
+    <Card className="bg-white/5 backdrop-blur-sm border-[#B13BFF]/30 shadow-2xl hover:border-[#B13BFF] transition-all duration-300">
+      <CardHeader className="border-b border-[#B13BFF]/20 pb-6">
+        <CardTitle className="text-2xl font-semibold text-white">Upload Audio</CardTitle>
         <CardDescription className="text-white/50 font-light">
           Select an audio file to transcribe
         </CardDescription>
@@ -174,19 +115,19 @@ const UploadAudio: React.FC<{ onUploadSuccess: () => void }> = ({ onUploadSucces
       <CardContent className="p-6">
         <div className="flex flex-col gap-5">
           <div className="space-y-2">
-            <Label htmlFor="audio-file" className="text-white/70 font-light text-sm">Audio File</Label>
+            <Label htmlFor="audio-file" className="text-white/70 font-medium text-sm">Audio File</Label>
             <Input
               id="audio-file"
               type="file"
               accept="audio/*"
               onChange={handleFileChange}
-              className="bg-white/5 border-white/10 text-white file:bg-white/10 file:text-white file:border-0 file:mr-4 file:py-2 file:px-4 file:rounded-md hover:bg-white/10 transition-colors font-light"
+              className="bg-white/5 border-[#B13BFF]/30 text-white file:bg-[#B13BFF] file:text-white file:border-0 file:mr-4 file:py-2 file:px-4 file:rounded-md file:font-medium hover:bg-white/10 hover:border-[#B13BFF] transition-all duration-300 font-light cursor-pointer"
             />
           </div>
           {selectedFile && (
-            <div className="bg-white/5 border border-white/10 rounded-lg p-4">
+            <div className="bg-white/5 border border-[#B13BFF]/30 rounded-lg p-4 hover:border-[#B13BFF] transition-colors duration-300">
               <p className="text-white/80 font-light">
-                <span className="text-white/50">Selected:</span> {selectedFile.name}
+                <span className="text-[#FFCC00] font-medium">Selected:</span> {selectedFile.name}
               </p>
               <p className="text-white/50 text-sm font-light mt-1">
                 {getFileSizeMB(selectedFile).toFixed(2)} MB
@@ -195,10 +136,10 @@ const UploadAudio: React.FC<{ onUploadSuccess: () => void }> = ({ onUploadSucces
           )}
           {monitoredFiles.length > 0 && (
             <div className="space-y-3">
-              <h3 className="text-lg font-light text-white">Monitored Files</h3>
+              <h3 className="text-lg font-medium text-white">Monitored Files</h3>
               <div className="space-y-2">
                 {monitoredFiles.map((file) => (
-                  <div key={file.name} className="flex items-center justify-between bg-white/5 border border-white/10 rounded-lg p-4 hover:bg-white/10 transition-colors">
+                  <div key={file.name} className="flex items-center justify-between bg-white/5 border border-[#B13BFF]/30 rounded-lg p-4 hover:bg-white/10 hover:border-[#B13BFF] transition-all duration-300 transform hover:-translate-y-0.5">
                     <div className="flex-1 min-w-0">
                       <p className="text-white/80 font-light truncate">{file.name}</p>
                       <p className="text-white/50 text-sm font-light">
@@ -207,7 +148,7 @@ const UploadAudio: React.FC<{ onUploadSuccess: () => void }> = ({ onUploadSucces
                     </div>
                     <Button 
                       onClick={() => handleMonitoredFileSelect(file.name)}
-                      className="ml-4 bg-white/10 hover:bg-white/20 text-white border border-white/20 font-light"
+                      className="ml-4 bg-[#B13BFF] hover:bg-[#FFCC00] hover:text-[#090040] text-white border-0 font-medium transition-all duration-300 transform hover:scale-105"
                     >
                       Select
                     </Button>
@@ -216,35 +157,16 @@ const UploadAudio: React.FC<{ onUploadSuccess: () => void }> = ({ onUploadSucces
               </div>
             </div>
           )}
-          {isCompressionNeeded && (
-            <Button 
-              onClick={compressAudio} 
-              disabled={isCompressing}
-              className="bg-white/10 hover:bg-white/20 text-white border border-white/20 font-light"
-            >
-              {isCompressing ? 'Compressing...' : 'Compress Audio'}
-            </Button>
-          )}
-          {compressedFile && (
-            <div className="bg-green-500/10 border border-green-500/20 rounded-lg p-4">
-              <p className="text-green-300 font-light">
-                <span className="text-green-200/70">Compressed:</span> {compressedFile.name}
-              </p>
-              <p className="text-green-300/70 text-sm font-light mt-1">
-                {getFileSizeMB(compressedFile).toFixed(2)} MB
-              </p>
-            </div>
-          )}
           <Button 
             onClick={handleTranscribe} 
             disabled={isTranscribeDisabled}
-            className="bg-white text-[#301934] hover:bg-white/90 font-medium py-6 text-base disabled:opacity-50 disabled:cursor-not-allowed"
+            className="bg-[#FFCC00] text-[#090040] hover:bg-white hover:shadow-lg hover:shadow-[#FFCC00]/50 font-bold py-6 text-base transition-all duration-300 transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
           >
             {isTranscribing ? 'Transcribing...' : 'Transcribe Audio'}
           </Button>
-          {isTranscribeDisabled && selectedFile && getFileSizeMB(compressedFile || selectedFile) > 24 && (
+          {selectedFile && getFileSizeMB(selectedFile) > 25 && (
             <p className="text-red-300 bg-red-500/10 border border-red-500/20 rounded-lg p-3 text-sm font-light">
-              File size exceeds 24 MB. Please compress the file before transcribing.
+              File size exceeds 25 MB. Please use a smaller file.
             </p>
           )}
         </div>

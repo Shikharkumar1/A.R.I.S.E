@@ -16,9 +16,9 @@ interface CategoryProps {
 
 const CategoryCard: React.FC<CategoryProps> = ({ title, items, gridSpan }) => {
   return (
-    <Card className={`h-full ${gridSpan} bg-white/5 backdrop-blur-sm border-white/10`}>
-      <CardHeader className="border-b border-white/5">
-        <CardTitle className="text-white font-light text-lg">{title}</CardTitle>
+    <Card className={`h-full ${gridSpan} bg-white/5 backdrop-blur-sm border-[#B13BFF]/30 hover:border-[#B13BFF] transition-all duration-300`}>
+      <CardHeader className="border-b border-[#B13BFF]/20">
+        <CardTitle className="text-white font-medium text-lg">{title}</CardTitle>
       </CardHeader>
       <CardContent className="pt-6">
         <ScrollArea className="h-[200px] pr-4">
@@ -27,7 +27,7 @@ const CategoryCard: React.FC<CategoryProps> = ({ title, items, gridSpan }) => {
           ) : (
             <ul className="space-y-3">
               {items.map((item, index) => (
-                <li key={index} className="bg-white/5 border border-white/10 p-3 rounded-lg hover:bg-white/10 transition-colors">
+                <li key={index} className="bg-white/5 border border-[#471396]/30 p-3 rounded-lg hover:bg-white/10 hover:border-[#B13BFF] transition-all duration-300 transform hover:-translate-y-0.5">
                   {Object.entries(item).map(([key, value]) => {
                     const formattedKey = key.split('_').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
                     let formattedValue = value;
@@ -36,7 +36,7 @@ const CategoryCard: React.FC<CategoryProps> = ({ title, items, gridSpan }) => {
                     }
                     return (
                       <div key={key} className="mb-1 last:mb-0">
-                        <strong className="text-white/90 font-medium">{formattedKey}:</strong>{' '}
+                        <strong className="text-[#FFCC00] font-medium">{formattedKey}:</strong>{' '}
                         <span className="text-white/60 font-light">{formattedValue}</span>
                       </div>
                     );

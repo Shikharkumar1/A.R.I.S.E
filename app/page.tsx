@@ -18,14 +18,14 @@ export default function Home() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#301934] via-[#341539] to-[#301934] text-white">
+    <div className="min-h-screen bg-gradient-to-br from-[#090040] via-[#471396] to-[#090040] text-white">
       {/* Header */}
       <header className="container mx-auto px-6 py-8 flex justify-between items-center">
-        <div className="flex items-center space-x-2">
-          <span className="text-3xl font-light tracking-wider text-white">A.R.I.S.E</span>
-        </div>
+        <Link href="/" className="flex items-center space-x-2 group">
+          <span className="text-4xl font-black tracking-tight text-white group-hover:text-[#FFCC00] transition-colors duration-300">A.R.I.S.E</span>
+        </Link>
         <nav>
-          <Link href="/dashboard" className="bg-white/10 hover:bg-white/20 backdrop-blur-sm text-white font-medium py-2.5 px-6 rounded-lg transition-all duration-300 border border-white/20">
+          <Link href="/dashboard" className="bg-[#B13BFF] hover:bg-[#FFCC00] hover:text-[#090040] backdrop-blur-sm text-white font-semibold py-3 px-8 rounded-lg transition-all duration-300 transform hover:scale-105 hover:shadow-lg hover:shadow-[#FFCC00]/50">
             Try It Now
           </Link>
         </nav>
@@ -72,9 +72,9 @@ export default function Home() {
             variants={fadeIn}
             transition={{ duration: 0.5, delay: 0.3 }}
           >
-            <Link href="/dashboard" className="group bg-white text-[#301934] hover:bg-white/90 font-medium py-4 px-8 rounded-lg text-lg transition-all duration-300 flex items-center gap-2">
+            <Link href="/dashboard" className="group bg-[#FFCC00] text-[#090040] hover:bg-white font-bold py-4 px-10 rounded-lg text-lg transition-all duration-300 flex items-center gap-2 transform hover:scale-105 hover:shadow-xl hover:shadow-[#FFCC00]/50">
               Get Started
-              <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+              <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform duration-300" />
             </Link>
           </motion.div>
         </section>
@@ -89,13 +89,13 @@ export default function Home() {
             ].map((step, index) => (
               <motion.div
                 key={index}
-                className="bg-white/5 backdrop-blur-sm p-8 rounded-2xl border border-white/10 hover:bg-white/10 transition-all duration-300"
+                className="bg-white/5 backdrop-blur-sm p-8 rounded-2xl border border-[#B13BFF]/30 hover:border-[#B13BFF] hover:bg-white/10 hover:shadow-lg hover:shadow-[#B13BFF]/20 transition-all duration-300 transform hover:-translate-y-1"
                 initial="hidden"
                 animate={isVisible ? "visible" : "hidden"}
                 variants={fadeIn}
                 transition={{ duration: 0.5, delay: 0.1 * index }}
               >
-                <step.icon className="w-10 h-10 mb-4 text-white/80" strokeWidth={1.5} />
+                <step.icon className="w-10 h-10 mb-4 text-[#B13BFF]" strokeWidth={1.5} />
                 <h3 className="text-xl font-medium mb-3 text-white">{step.title}</h3>
                 <p className="text-white/60 font-light leading-relaxed">{step.description}</p>
               </motion.div>
@@ -114,13 +114,13 @@ export default function Home() {
             ].map((benefit, index) => (
               <motion.div
                 key={index}
-                className="bg-white/5 backdrop-blur-sm p-8 rounded-2xl border border-white/10 hover:bg-white/10 transition-all duration-300"
+                className="bg-white/5 backdrop-blur-sm p-8 rounded-2xl border border-[#471396]/30 hover:border-[#FFCC00] hover:bg-white/10 hover:shadow-lg hover:shadow-[#FFCC00]/20 transition-all duration-300 transform hover:-translate-y-1"
                 initial="hidden"
                 animate={isVisible ? "visible" : "hidden"}
                 variants={fadeIn}
                 transition={{ duration: 0.5, delay: 0.1 * index }}
               >
-                <h3 className="text-xl font-medium mb-3 text-white">{benefit.title}</h3>
+                <h3 className="text-xl font-medium mb-3 text-[#FFCC00]">{benefit.title}</h3>
                 <p className="text-white/60 font-light leading-relaxed">{benefit.description}</p>
               </motion.div>
             ))}

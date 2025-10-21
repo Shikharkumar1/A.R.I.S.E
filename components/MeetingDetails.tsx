@@ -92,12 +92,12 @@ export default function MeetingDetails({ data }: MeetingDetailsProps) {
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <h1 className="text-3xl font-light text-white mb-2">{data.name}</h1>
+          <h1 className="text-3xl font-semibold text-white mb-2">{data.name}</h1>
           <p className="text-white/50 font-light">{data.description}</p>
         </div>
         <button
           onClick={handleExport}
-          className="flex items-center px-5 py-2.5 bg-white/10 hover:bg-white/20 backdrop-blur-sm text-white rounded-lg border border-white/20 transition-all font-light"
+          className="flex items-center px-5 py-2.5 bg-[#FFCC00] hover:bg-white text-[#090040] rounded-lg font-bold transition-all duration-300 transform hover:scale-105 hover:shadow-lg hover:shadow-[#FFCC00]/50"
         >
           <Download className="w-5 h-5 mr-2" />
           Export as DOCX
@@ -105,26 +105,26 @@ export default function MeetingDetails({ data }: MeetingDetailsProps) {
       </div>
       
       <Tabs defaultValue="summary" className="space-y-6">
-        <TabsList className="bg-white/5 backdrop-blur-sm border border-white/10 p-1">
+        <TabsList className="bg-white/5 backdrop-blur-sm border border-[#B13BFF]/30 p-1">
           <TabsTrigger 
             value="summary" 
-            className="data-[state=active]:bg-white/20 data-[state=active]:text-white text-white/60 font-light"
+            className="data-[state=active]:bg-[#B13BFF] data-[state=active]:text-white text-white/60 font-medium transition-all duration-300"
           >
             Summary
           </TabsTrigger>
           <TabsTrigger 
             value="details"
-            className="data-[state=active]:bg-white/20 data-[state=active]:text-white text-white/60 font-light"
+            className="data-[state=active]:bg-[#B13BFF] data-[state=active]:text-white text-white/60 font-medium transition-all duration-300"
           >
             Details
           </TabsTrigger>
         </TabsList>
         
         <TabsContent value="summary" className="space-y-6 mt-6">
-          <Card className="bg-white/5 backdrop-blur-sm border-white/10">
-            <CardHeader className="border-b border-white/5">
-              <CardTitle className="flex items-center gap-2 text-white font-light text-xl">
-                <FileText className="w-5 h-5" />
+          <Card className="bg-white/5 backdrop-blur-sm border-[#B13BFF]/30 hover:border-[#B13BFF] transition-colors duration-300">
+            <CardHeader className="border-b border-[#B13BFF]/20">
+              <CardTitle className="flex items-center gap-2 text-white font-medium text-xl">
+                <FileText className="w-5 h-5 text-[#B13BFF]" />
                 <span>Summary</span>
               </CardTitle>
             </CardHeader>
@@ -133,15 +133,15 @@ export default function MeetingDetails({ data }: MeetingDetailsProps) {
             </CardContent>
           </Card>
           
-          <Card className="bg-white/5 backdrop-blur-sm border-white/10">
-            <CardHeader className="border-b border-white/5">
-              <CardTitle className="flex items-center gap-2 text-white font-light text-xl">
-                <FileText className="w-5 h-5" />
+          <Card className="bg-white/5 backdrop-blur-sm border-[#B13BFF]/30 hover:border-[#B13BFF] transition-colors duration-300">
+            <CardHeader className="border-b border-[#B13BFF]/20">
+              <CardTitle className="flex items-center gap-2 text-white font-medium text-xl">
+                <FileText className="w-5 h-5 text-[#B13BFF]" />
                 <span>Transcript</span>
               </CardTitle>
             </CardHeader>
             <CardContent className="pt-6">
-              <ScrollArea className="h-[300px] rounded-lg bg-white/5 p-4">
+              <ScrollArea className="h-[300px] rounded-lg bg-white/5 p-4 border border-[#471396]/30">
                 <p className="text-white/60 font-light leading-relaxed whitespace-pre-wrap">{data.transcript}</p>
               </ScrollArea>
             </CardContent>

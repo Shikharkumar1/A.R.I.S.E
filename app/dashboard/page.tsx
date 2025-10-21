@@ -16,6 +16,7 @@ import { Card, CardHeader, CardTitle, CardContent, CardDescription } from "@/com
 import UploadAudio from '@/components/UploadAudio';
 import { useToast } from "@/hooks/use-toast"
 import { Eye, Trash2 } from 'lucide-react';
+import Link from 'next/link';
 
 
 interface Meeting {
@@ -73,11 +74,13 @@ const Dashboard: React.FC = () => {
     }
   };
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#341539] via-[#301934] to-[#341539]">
+    <div className="min-h-screen bg-gradient-to-br from-[#471396] via-[#090040] to-[#471396]">
       {/* Header */}
-      <header className="sticky top-0 z-30 backdrop-blur-md bg-[#301934]/80 border-b border-white/5">
+      <header className="sticky top-0 z-30 backdrop-blur-md bg-[#090040]/80 border-b border-[#B13BFF]/20">
         <div className="container mx-auto px-6 h-16 flex items-center">
-          <h1 className="text-2xl font-light tracking-wider text-white">A.R.I.S.E</h1>
+          <Link href="/" className="group">
+            <h1 className="text-3xl font-black tracking-tight text-white group-hover:text-[#FFCC00] transition-colors duration-300 cursor-pointer">A.R.I.S.E</h1>
+          </Link>
         </div>
       </header>
       
@@ -88,9 +91,9 @@ const Dashboard: React.FC = () => {
         </div>
 
         {/* Meetings List */}
-        <Card className="bg-white/5 backdrop-blur-sm border-white/10 shadow-2xl">
-          <CardHeader className="border-b border-white/5 pb-6">
-            <CardTitle className="text-2xl font-light text-white">Your Meetings</CardTitle>
+        <Card className="bg-white/5 backdrop-blur-sm border-[#B13BFF]/30 shadow-2xl">
+          <CardHeader className="border-b border-[#B13BFF]/20 pb-6">
+            <CardTitle className="text-2xl font-semibold text-white">Your Meetings</CardTitle>
             <CardDescription className="text-white/50 font-light">
               Recent transcribed meetings
             </CardDescription>
@@ -101,7 +104,7 @@ const Dashboard: React.FC = () => {
                 {meetings.map((meeting) => (
                   <div
                     key={meeting.id}
-                    className="group bg-white/5 hover:bg-white/10 backdrop-blur-sm border border-white/10 rounded-xl p-5 transition-all duration-300"
+                    className="group bg-white/5 hover:bg-white/10 backdrop-blur-sm border border-[#B13BFF]/30 hover:border-[#B13BFF] rounded-xl p-5 transition-all duration-300 transform hover:-translate-y-1 hover:shadow-lg hover:shadow-[#B13BFF]/20"
                   >
                     <div className="flex items-center justify-between">
                       <div className="flex-1 min-w-0 space-y-1">
@@ -117,7 +120,7 @@ const Dashboard: React.FC = () => {
                           variant="ghost"
                           size="sm"
                           onClick={() => handleViewDetails(meeting.id)}
-                          className="text-white hover:bg-white/10 hover:text-white border border-white/20 rounded-lg font-light"
+                          className="text-white hover:bg-[#B13BFF] hover:text-white border border-[#B13BFF] rounded-lg font-medium transition-all duration-300 transform hover:scale-105"
                         >
                           <Eye className="w-4 h-4 mr-2" />
                           View
@@ -126,7 +129,7 @@ const Dashboard: React.FC = () => {
                           variant="ghost"
                           size="sm"
                           onClick={() => handleDelete(meeting.id)}
-                          className="text-red-300 hover:bg-red-500/10 hover:text-red-200 border border-red-500/20 rounded-lg font-light"
+                          className="text-red-300 hover:bg-red-500 hover:text-white border border-red-500/50 rounded-lg font-medium transition-all duration-300 transform hover:scale-105"
                         >
                           <Trash2 className="w-4 h-4 mr-2" />
                           Delete

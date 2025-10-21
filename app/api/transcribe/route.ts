@@ -1,9 +1,13 @@
 import type { NextRequest } from 'next/server'
 import { NextResponse } from 'next/server'
-import axios from 'axios'
 import fs from 'fs'
 import path from 'path'
 import { prisma } from '@/lib/prisma'
+import OpenAI from 'openai'
+
+const openai = new OpenAI({
+  apiKey: process.env.OPENAI_API_KEY,
+})
 
 export const POST = async (request: NextRequest) => {
   try {
@@ -18,6 +22,10 @@ export const POST = async (request: NextRequest) => {
     if (!file) {
       console.error('No audio file provided')
       return NextResponse.json({ error: 'No audio file provided.' }, { status: 400 })
+    }
+
+    if (!process.env.OPENAI_API_KEY) {
+      throw new Error('OPENAI_API_KEY is not defined in the environment variables')
     }
 
     // Convert File to Buffer
@@ -38,60 +46,57 @@ export const POST = async (request: NextRequest) => {
     fs.writeFileSync(filePath, buffer)
 
     console.log('File saved at:', filePath)
+    console.log('Starting transcription with OpenAI Whisper...')
 
-    // Get the API URL from the environment variable
-    const apiUrl = process.env.LANGFLOW_FLOW_URL
-
-    if (!apiUrl) {
-      throw new Error('LANGFLOW_FLOW_URL is not defined in the environment variables')
-    }
-
-    // Prepare JSON payload
-    const payload = {
-      output_type: 'text',
-      input_type: 'text',
-      tweaks: {
-        'GroqWhisperComponent-Lep46': {
-          audio_file: filePath // Use the full path of the saved file
-        },         
-      }
-    }
-
-    console.log('Sending request to API:', apiUrl)
-
-    // Send POST request to the transcription API
-    const apiResponse = await axios.post(apiUrl, payload, {
-      headers: {
-        'Content-Type': 'application/json',
-      },
+    // Transcribe audio using OpenAI Whisper
+    const transcription = await openai.audio.transcriptions.create({
+      file: fs.createReadStream(filePath),
+      model: "whisper-1",
     })
 
-    console.log('Received response from API')
+    const rawTranscript = transcription.text
+    console.log('Transcription completed. Length:', rawTranscript.length)
+
+    // Now analyze the transcript using GPT to extract structured information
+    console.log('Analyzing transcript with GPT-4...')
     
-    // Ensure the response has the expected structure
-    if (!apiResponse.data || !apiResponse.data.outputs) {
-      throw new Error('Invalid API response structure.')
-    }
+    const analysisPrompt = `Analyze the following meeting transcript and extract structured information in JSON format. Include:
+- Meeting Name (create a descriptive title)
+- Description (brief summary)
+- Summary (detailed summary of the meeting)
+- Tasks (array of {description, owner, due_date})
+- Decisions (array of {description, date})
+- Questions (array of {question, status, answer})
+- Insights (array of {insight, reference})
+- Deadlines (array of {description, date})
+- Attendees (array of {name, role})
+- Follow-ups (array of {description, owner})
+- Risks (array of {risk, impact})
+- Agenda (array of strings)
 
-    const { outputs } = apiResponse.data
-    const analyzedTranscript = outputs[0]?.outputs[0]?.results?.breakdown?.text
-    const rawTranscript = outputs[0]?.outputs[1]?.results?.transcription?.text
+Return ONLY valid JSON, no markdown or code blocks.
 
-    if (!analyzedTranscript || !rawTranscript) {
-      throw new Error('Invalid API response structure.')
-    }
-    console.log('Analyzed transcript:', analyzedTranscript.substring(0, 100) + '...')
-    console.log('Raw transcript:', rawTranscript.substring(0, 100) + '...')
+Transcript:
+${rawTranscript}`
 
-    // Parse JSON strings
+    const completion = await openai.chat.completions.create({
+      model: "gpt-4-turbo-preview",
+      messages: [{ role: "user", content: analysisPrompt }],
+      response_format: { type: "json_object" },
+      temperature: 0.3,
+    })
+
+    const analyzedText = completion.choices[0].message.content
+    console.log('Analysis completed')
+
+    // Parse JSON response
     let analyzedData
     try {
-      analyzedData = JSON.parse(analyzedTranscript)
+      analyzedData = JSON.parse(analyzedText || '{}')
     } catch (parseError) {
       throw new Error('Failed to parse analyzed transcript JSON.')
     }
 
-    const rawData = rawTranscript
     console.log('Analyzed Data:', JSON.stringify(analyzedData, null, 2))
     console.log('Saving to database...')
 
@@ -106,7 +111,7 @@ export const POST = async (request: NextRequest) => {
       data: {
         name: analyzedData['Meeting Name'] || 'Untitled Meeting',
         description: analyzedData['Description'] || 'No description provided.',
-        rawTranscript: rawData,
+        rawTranscript: rawTranscript,
         summary: analyzedData['Summary'] || '',
         tasks: {
           create: (analyzedData['Tasks'] || [])

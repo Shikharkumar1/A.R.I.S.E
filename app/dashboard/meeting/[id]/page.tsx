@@ -58,21 +58,21 @@ export default function MeetingPage() {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-[#341539] via-[#301934] to-[#341539]">
-        <header className="sticky top-0 z-30 backdrop-blur-md bg-[#301934]/80 border-b border-white/5">
+      <div className="min-h-screen bg-gradient-to-br from-[#471396] via-[#090040] to-[#471396]">
+        <header className="sticky top-0 z-30 backdrop-blur-md bg-[#090040]/80 border-b border-[#B13BFF]/20">
           <div className="container mx-auto px-6 h-16 flex items-center">
-            <h1 className="text-2xl font-light tracking-wider text-white">A.R.I.S.E</h1>
+            <h1 className="text-3xl font-black tracking-tight text-white">A.R.I.S.E</h1>
           </div>
         </header>
         <div className="container mx-auto px-6 py-8">
           <button 
             onClick={handleGoBack} 
-            className="mb-6 flex items-center text-white/70 hover:text-white transition-colors font-light"
+            className="mb-6 flex items-center text-white/70 hover:text-[#FFCC00] transition-all duration-300 font-medium transform hover:translate-x-[-4px]"
           >
             <ArrowLeft className="mr-2" size={20} />
             Back to Dashboard
           </button>
-          <div className="bg-red-500/10 border border-red-500/20 rounded-lg p-6 text-red-300 font-light">
+          <div className="bg-red-500/10 border border-red-500/30 rounded-lg p-6 text-red-300 font-light">
             {error}
           </div>
         </div>
@@ -82,16 +82,16 @@ export default function MeetingPage() {
 
   if (!data) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-[#341539] via-[#301934] to-[#341539]">
-        <header className="sticky top-0 z-30 backdrop-blur-md bg-[#301934]/80 border-b border-white/5">
+      <div className="min-h-screen bg-gradient-to-br from-[#471396] via-[#090040] to-[#471396]">
+        <header className="sticky top-0 z-30 backdrop-blur-md bg-[#090040]/80 border-b border-[#B13BFF]/20">
           <div className="container mx-auto px-6 h-16 flex items-center">
-            <h1 className="text-2xl font-light tracking-wider text-white">A.R.I.S.E</h1>
+            <h1 className="text-3xl font-black tracking-tight text-white">A.R.I.S.E</h1>
           </div>
         </header>
         <div className="container mx-auto px-6 py-8">
           <button 
             onClick={handleGoBack} 
-            className="mb-6 flex items-center text-white/70 hover:text-white transition-colors font-light"
+            className="mb-6 flex items-center text-white/70 hover:text-[#FFCC00] transition-all duration-300 font-medium transform hover:translate-x-[-4px]"
           >
             <ArrowLeft className="mr-2" size={20} />
             Back to Dashboard
@@ -104,16 +104,16 @@ export default function MeetingPage() {
 
   console.log("Rendering MeetingDetails with data:", data);
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#341539] via-[#301934] to-[#341539]">
-      <header className="sticky top-0 z-30 backdrop-blur-md bg-[#301934]/80 border-b border-white/5">
+    <div className="min-h-screen bg-gradient-to-br from-[#471396] via-[#090040] to-[#471396]">
+      <header className="sticky top-0 z-30 backdrop-blur-md bg-[#090040]/80 border-b border-[#B13BFF]/20">
         <div className="container mx-auto px-6 h-16 flex items-center">
-          <h1 className="text-2xl font-light tracking-wider text-white">A.R.I.S.E</h1>
+          <h1 className="text-3xl font-black tracking-tight text-white">A.R.I.S.E</h1>
         </div>
       </header>
       <div className="container mx-auto px-6 py-8">
         <button 
           onClick={handleGoBack} 
-          className="mb-6 flex items-center text-white/70 hover:text-white transition-colors font-light"
+          className="mb-6 flex items-center text-white/70 hover:text-[#FFCC00] transition-all duration-300 font-medium transform hover:translate-x-[-4px]"
         >
           <ArrowLeft className="mr-2" size={20} />
           Back to Dashboard
