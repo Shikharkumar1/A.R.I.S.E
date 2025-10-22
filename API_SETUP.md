@@ -1,69 +1,137 @@
 # API Setup Instructions
 
-## OpenAI API Key Setup
+A.R.I.S.E uses **FREE APIs** for meeting transcription and analysis:
+- **AssemblyAI** for audio transcription (FREE: 5 hours/month)
+- **Groq** for meeting analysis (FREE with rate limits)
 
-A.R.I.S.E uses OpenAI's Whisper API for transcription and GPT-4 for meeting analysis.
+---
 
-### Steps to get your OpenAI API Key:
+## 1. AssemblyAI API Key Setup (Transcription)
 
-1. **Create an OpenAI Account**
-   - Go to [https://platform.openai.com/signup](https://platform.openai.com/signup)
-   - Sign up with your email or use Google/Microsoft account
+### Steps to get your FREE AssemblyAI API Key:
 
-2. **Add Payment Method**
-   - Go to [https://platform.openai.com/account/billing](https://platform.openai.com/account/billing)
-   - Add a payment method (required for API access)
-   - You can set usage limits to control costs
+1. **Create an AssemblyAI Account**
+   - Go to [https://www.assemblyai.com/dashboard/signup](https://www.assemblyai.com/dashboard/signup)
+   - Sign up with your email or use Google/GitHub account
+   - **No credit card required!**
 
-3. **Create API Key**
-   - Go to [https://platform.openai.com/api-keys](https://platform.openai.com/api-keys)
-   - Click "Create new secret key"
-   - Give it a name (e.g., "ARISE-App")
-   - Copy the key immediately (you won't be able to see it again!)
+2. **Get Your API Key**
+   - After signing up, you'll be taken to your dashboard
+   - Your API key will be displayed immediately
+   - Or go to [https://www.assemblyai.com/app/account](https://www.assemblyai.com/app/account)
+   - Copy the API key (starts with a long string of characters)
 
-4. **Add Key to Your Project**
+3. **Add Key to Your Project**
    - Open the `.env.local` file in your project root
-   - Replace `your_openai_api_key_here` with your actual API key:
+   - Replace `your_assemblyai_api_key_here` with your actual API key:
    ```
-   OPENAI_API_KEY=sk-proj-xxxxxxxxxxxxxxxxxxxxx
+   ASSEMBLYAI_API_KEY=your_actual_key_here
    ```
    - Save the file
-   - Restart your development server
 
-### Costs
+### Free Tier Limits
+- ✅ **5 hours of transcription per month** (FREE forever)
+- ✅ No credit card required
+- ✅ High-quality transcription
+- ✅ Perfect for personal/small business use
 
-OpenAI charges based on usage:
-- **Whisper API**: ~$0.006 per minute of audio
-- **GPT-4 Turbo**: ~$0.01 per 1K tokens (approximately 750 words)
+---
 
-Example: A 10-minute meeting would cost approximately:
-- Transcription: $0.06
-- Analysis: $0.02-0.05
-- **Total: ~$0.08-0.11 per meeting**
+## 2. Groq API Key Setup (Analysis)
 
-### Important Notes
+### Steps to get your FREE Groq API Key:
 
-- ⚠️ **Never commit your API key to Git!** The `.env.local` file is already in `.gitignore`
-- 💰 Set up usage limits in your OpenAI account to prevent unexpected charges
-- 🔒 Keep your API key secure and don't share it publicly
-- 📊 Monitor your usage at [https://platform.openai.com/usage](https://platform.openai.com/usage)
+1. **Create a Groq Account**
+   - Go to [https://console.groq.com/](https://console.groq.com/)
+   - Sign up with your email or use Google/GitHub account
+   - **No credit card required!**
 
-### Troubleshooting
+2. **Create API Key**
+   - Go to [https://console.groq.com/keys](https://console.groq.com/keys)
+   - Click "Create API Key"
+   - Give it a name (e.g., "ARISE-App")
+   - Copy the key immediately (starts with `gsk_`)
 
-**"Error: OPENAI_API_KEY is not defined"**
+3. **Add Key to Your Project**
+   - Open the `.env.local` file in your project root
+   - Replace `your_groq_api_key_here` with your actual API key:
+   ```
+   GROQ_API_KEY=gsk_xxxxxxxxxxxxxxxxxxxxx
+   ```
+   - Save the file
+
+### Free Tier Limits
+- ✅ **Completely FREE** with generous rate limits
+- ✅ Uses Llama 3.3 70B model (very powerful)
+- ✅ Super fast inference
+- ✅ No credit card required
+
+---
+
+## 3. Restart Your Server
+
+After adding both API keys:
+```bash
+# Stop your server (Ctrl+C)
+# Then restart:
+pnpm dev
+```
+
+---
+
+## Your Final .env.local File Should Look Like:
+
+```bash
+# AssemblyAI API Key (FREE - 5 hours/month)
+ASSEMBLYAI_API_KEY=your_actual_assemblyai_key_here
+
+# Groq API Key (FREE with rate limits)
+GROQ_API_KEY=gsk_your_actual_groq_key_here
+```
+
+---
+
+## Important Security Notes
+
+- ⚠️ **Never commit your API keys to Git!** The `.env.local` file is already in `.gitignore`
+-  Keep your API keys secure and don't share them publicly
+- ✅ Both services are FREE and don't require credit cards
+
+---
+
+## Troubleshooting
+
+**"Error: ASSEMBLYAI_API_KEY is not defined"**
 - Make sure you've added the key to `.env.local`
 - Restart your development server after adding the key
+- Check for typos in the key
 
-**"Invalid API key"**
-- Check that you copied the entire key correctly
-- Make sure there are no extra spaces
-- Verify the key is active in your OpenAI dashboard
+**"Error: GROQ_API_KEY is not defined"**
+- Same as above - check `.env.local` and restart server
 
-**"Insufficient quota"**
-- Add a payment method to your OpenAI account
-- Check your usage limits
+**Transcription takes a long time**
+- AssemblyAI typically takes 15-30% of the audio duration
+- Example: 10-minute audio = ~2-3 minutes processing time
 
-### Need Help?
+**Rate limit errors**
+- Groq has generous rate limits, but if you hit them, wait a minute and try again
+- AssemblyAI allows concurrent transcriptions
 
-- OpenAI Documentation: [https://platform.openai.com/docs](https://platform.openai.com/docs)
-- API Reference: [https://platform.openai.com/docs/api-reference](https://platform.openai.com/docs/api-reference)
+---
+
+## Need Help?
+
+- **AssemblyAI Docs**: [https://www.assemblyai.com/docs](https://www.assemblyai.com/docs)
+- **Groq Docs**: [https://console.groq.com/docs](https://console.groq.com/docs)
+
+---
+
+## Summary: Why These APIs?
+
+| Feature | AssemblyAI | Groq |
+|---------|-----------|------|
+| **Cost** | FREE (5 hrs/month) | FREE |
+| **Quality** | High-quality transcription | Llama 3.3 70B (excellent) |
+| **Speed** | ~20-30% of audio length | Super fast |
+| **Credit Card** | Not required | Not required |
+| **Perfect For** | Meeting transcription | Meeting analysis |

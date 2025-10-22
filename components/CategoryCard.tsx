@@ -31,7 +31,7 @@ const CategoryCard: React.FC<CategoryProps> = ({ title, items, gridSpan }) => {
                   {Object.entries(item).map(([key, value]) => {
                     const formattedKey = key.split('_').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
                     let formattedValue = value;
-                    if (key === 'due_date' && value.includes('T')) {
+                    if (key === 'due_date' && value && typeof value === 'string' && value.includes('T')) {
                       formattedValue = value.split('T')[0];
                     }
                     return (

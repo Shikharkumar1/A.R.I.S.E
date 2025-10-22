@@ -3,10 +3,11 @@ import { NextResponse } from 'next/server'
 import fs from 'fs'
 import path from 'path'
 import { prisma } from '@/lib/prisma'
-import OpenAI from 'openai'
+import { AssemblyAI } from 'assemblyai'
+import { GoogleGenerativeAI } from '@google/generative-ai'
 
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
+const assemblyai = new AssemblyAI({
+  apiKey: process.env.ASSEMBLYAI_API_KEY || '',
 })
 
 export const POST = async (request: NextRequest) => {
@@ -24,8 +25,12 @@ export const POST = async (request: NextRequest) => {
       return NextResponse.json({ error: 'No audio file provided.' }, { status: 400 })
     }
 
-    if (!process.env.OPENAI_API_KEY) {
-      throw new Error('OPENAI_API_KEY is not defined in the environment variables')
+    if (!process.env.ASSEMBLYAI_API_KEY) {
+      throw new Error('ASSEMBLYAI_API_KEY is not defined in the environment variables')
+    }
+
+    if (!process.env.GEMINI_API_KEY) {
+      throw new Error('GEMINI_API_KEY is not defined in the environment variables')
     }
 
     // Convert File to Buffer
@@ -46,70 +51,107 @@ export const POST = async (request: NextRequest) => {
     fs.writeFileSync(filePath, buffer)
 
     console.log('File saved at:', filePath)
-    console.log('Starting transcription with OpenAI Whisper...')
+    console.log('Starting transcription with AssemblyAI...')
 
-    // Transcribe audio using OpenAI Whisper
-    const transcription = await openai.audio.transcriptions.create({
-      file: fs.createReadStream(filePath),
-      model: "whisper-1",
+    // Transcribe audio using AssemblyAI
+    const transcript = await assemblyai.transcripts.transcribe({
+      audio: filePath,
     })
 
-    const rawTranscript = transcription.text
+    if (transcript.status === 'error') {
+      throw new Error(`AssemblyAI transcription failed: ${transcript.error}`)
+    }
+
+    const rawTranscript = transcript.text || ''
     console.log('Transcription completed. Length:', rawTranscript.length)
 
-    // Now analyze the transcript using GPT to extract structured information
-    console.log('Analyzing transcript with GPT-4...')
+    // Analyze transcript using Google Gemini Pro (FREE & FAST!)
+    console.log('🚀 Analyzing transcript with Google Gemini Pro...')
+    console.log('GEMINI_API_KEY exists:', !!process.env.GEMINI_API_KEY)
     
-    const analysisPrompt = `Analyze the following meeting transcript and extract structured information in JSON format. Include:
-- Meeting Name (create a descriptive title)
-- Description (brief summary)
-- Summary (detailed summary of the meeting)
-- Tasks (array of {description, owner, due_date})
-- Decisions (array of {description, date})
-- Questions (array of {question, status, answer})
-- Insights (array of {insight, reference})
-- Deadlines (array of {description, date})
-- Attendees (array of {name, role})
-- Follow-ups (array of {description, owner})
-- Risks (array of {risk, impact})
-- Agenda (array of strings)
+    const analysisPrompt = `You are an expert meeting assistant. Analyze the following transcript and return a JSON object with the following structure:
 
-Return ONLY valid JSON, no markdown or code blocks.
+{
+  "meetingName": "descriptive title of the meeting",
+  "description": "brief 2-3 sentence summary",
+  "summary": "comprehensive meeting summary (5-8 sentences covering key points, discussions, and outcomes)",
+  "tasks": [{"description": "task description", "owner": "person name or Unassigned", "dueDate": "YYYY-MM-DD or null"}],
+  "decisions": [{"description": "decision made", "date": "YYYY-MM-DD"}],
+  "questions": [{"question": "question asked", "status": "Answered or Unanswered", "answer": "answer if available or empty"}],
+  "insights": [{"insight": "key insight or important point", "reference": "Meeting transcript"}],
+  "deadlines": [{"description": "deadline description", "date": "YYYY-MM-DD or null"}],
+  "attendees": [{"name": "person name", "role": "their role or Participant"}],
+  "followUps": [{"description": "follow-up action", "owner": "person or Unassigned"}],
+  "risks": [{"risk": "identified risk", "impact": "potential impact"}],
+  "agenda": ["agenda item 1", "agenda item 2"]
+}
 
-Transcript:
-${rawTranscript}`
+Extract ALL action items as tasks, ALL key decisions made, ALL questions asked (with answers if provided), key insights, deadlines, attendees mentioned, follow-up points, risks identified, and agenda items discussed.
 
-    const completion = await openai.chat.completions.create({
-      model: "gpt-4-turbo-preview",
-      messages: [{ role: "user", content: analysisPrompt }],
-      response_format: { type: "json_object" },
-      temperature: 0.3,
-    })
+Return ONLY valid JSON, no markdown formatting.
 
-    const analyzedText = completion.choices[0].message.content
-    console.log('Analysis completed')
+Meeting Transcript:
+${rawTranscript.substring(0, 12000)}`
 
-    // Parse JSON response
-    let analyzedData
     try {
-      analyzedData = JSON.parse(analyzedText || '{}')
-    } catch (parseError) {
-      throw new Error('Failed to parse analyzed transcript JSON.')
-    }
+      const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || '')
+      const geminiModel = genAI.getGenerativeModel({ model: "gemini-2.0-flash-exp" })
+      
+      const result = await geminiModel.generateContent([
+        "You are an expert meeting analysis assistant. Return only valid JSON, no markdown formatting or explanations.",
+        analysisPrompt
+      ])
 
-    console.log('Analyzed Data:', JSON.stringify(analyzedData, null, 2))
-    console.log('Saving to database...')
+      const response = await result.response
+      const analyzedText = response.text() || '{}'
+      console.log('✅ Analysis completed successfully')
+      console.log('Response preview:', analyzedText.substring(0, 200))
+      
+      // Clean and parse JSON
+      let cleanedText = analyzedText.trim()
+      // Remove markdown code blocks if present
+      cleanedText = cleanedText.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim()
+      // Find JSON object
+      const jsonMatch = cleanedText.match(/\{[\s\S]*\}/)
+      if (jsonMatch) {
+        cleanedText = jsonMatch[0]
+      }
+      
+      const parsedData = JSON.parse(cleanedText)
+      
+      // Map to expected format
+      const analyzedData = {
+        "Meeting Name": parsedData.meetingName || `Meeting - ${new Date().toLocaleDateString()}`,
+        "Description": parsedData.description || "Meeting notes",
+        "Summary": parsedData.summary || parsedData.description || "Meeting transcribed successfully",
+        "Tasks": parsedData.tasks || [],
+        "Decisions": parsedData.decisions || [],
+        "Questions": parsedData.questions || [],
+        "Insights": parsedData.insights || [],
+        "Deadlines": parsedData.deadlines || [],
+        "Attendees": parsedData.attendees || [],
+        "Follow-ups": parsedData.followUps || [],
+        "Risks": parsedData.risks || [],
+        "Agenda": parsedData.agenda || []
+      }
 
-    // Helper function to format dates as ISO strings
-    const formatDate = (date: string) => {
-      const parsedDate = new Date(date)
-      return !isNaN(parsedDate.getTime()) ? parsedDate.toISOString() : null
-    }
+      console.log('Analyzed Data:', JSON.stringify(analyzedData, null, 2))
+      console.log('Saving to database...')
 
-    // Save to database with safe access
-    const meeting = await prisma.meeting.create({
+      // Helper function to format dates as ISO strings
+      const formatDate = (date: string) => {
+        const parsedDate = new Date(date)
+        return !isNaN(parsedDate.getTime()) ? parsedDate.toISOString() : null
+      }
+
+      // Extract clean meeting name from audio file (remove extension and timestamp)
+      const cleanFileName = file.name.replace(/\.(mp3|mp4|wav|m4a|ogg|webm)$/i, '')
+      const meetingName = analyzedData['Meeting Name'] || cleanFileName || 'Untitled Meeting'
+
+      // Save to database with safe access
+      const meeting = await prisma.meeting.create({
       data: {
-        name: analyzedData['Meeting Name'] || 'Untitled Meeting',
+        name: meetingName,
         description: analyzedData['Description'] || 'No description provided.',
         rawTranscript: rawTranscript,
         summary: analyzedData['Summary'] || '',
@@ -119,7 +161,7 @@ ${rawTranscript}`
             .map((task: any) => ({
               task: task.description || 'No task description',
               owner: task.owner || 'Unassigned',
-              dueDate: task.due_date ? formatDate(task.due_date) : null,
+              dueDate: task.dueDate || task.due_date ? formatDate(task.dueDate || task.due_date) : null,
             })),
         },
         decisions: {
@@ -127,7 +169,7 @@ ${rawTranscript}`
             .filter((decision: any) => decision && typeof decision === 'object')
             .map((decision: any) => ({
               decision: decision.description || 'No decision description',
-              date: decision.date ? formatDate(decision.date) : new Date().toISOString(),
+              date: decision.date ? (formatDate(decision.date) || new Date().toISOString()) : new Date().toISOString(),
             })),
         },
         questions: {
@@ -200,9 +242,30 @@ ${rawTranscript}`
       },
     })
 
-    console.log('Meeting saved successfully:', meeting.id)
+      console.log('Meeting saved successfully:', meeting.id)
 
-    return NextResponse.json(meeting, { status: 200 })
+      return NextResponse.json(meeting, { status: 200 })
+      
+    } catch (aiError: any) {
+      console.error('❌ Gemini Analysis error:', aiError)
+      console.error('Error message:', aiError.message)
+      console.error('Error details:', aiError)
+      
+      // Extract clean meeting name from audio file (remove extension and timestamp)
+      const cleanFileName = file.name.replace(/\.(mp3|mp4|wav|m4a|ogg|webm)$/i, '')
+      
+      // Fallback: save transcript without AI analysis but with proper filename
+      const meeting = await prisma.meeting.create({
+        data: {
+          name: cleanFileName || `Meeting - ${new Date().toLocaleDateString()}`,
+          description: rawTranscript.substring(0, 200) + '...',
+          rawTranscript: rawTranscript,
+          summary: rawTranscript.substring(0, 500) + '...',
+        },
+      })
+      return NextResponse.json(meeting, { status: 200 })
+    }
+    
   } catch (error: any) {
     console.error('Error in /api/transcribe:', error)
     return NextResponse.json({ error: 'An error occurred during processing.' }, { status: 500 })
