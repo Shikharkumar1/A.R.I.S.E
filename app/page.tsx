@@ -25,7 +25,7 @@ export default function Home() {
           <span className="text-4xl font-black tracking-tight text-white group-hover:text-[#FFCC00] transition-colors duration-300">A.R.I.S.E</span>
         </Link>
         <nav>
-          <Link href="/dashboard" className="bg-[#B13BFF] hover:bg-[#FFCC00] hover:text-[#090040] backdrop-blur-sm text-white font-semibold py-3 px-8 rounded-lg transition-all duration-300 transform hover:scale-105 hover:shadow-lg hover:shadow-[#FFCC00]/50">
+          <Link href="/signin" className="bg-[#B13BFF] hover:bg-[#FFCC00] hover:text-[#090040] backdrop-blur-sm text-white font-semibold py-3 px-8 rounded-lg transition-all duration-300 transform hover:scale-105 hover:shadow-lg hover:shadow-[#FFCC00]/50">
             Try It Now
           </Link>
         </nav>
@@ -72,7 +72,7 @@ export default function Home() {
             variants={fadeIn}
             transition={{ duration: 0.5, delay: 0.3 }}
           >
-            <Link href="/dashboard" className="group bg-[#FFCC00] text-[#090040] hover:bg-white font-bold py-4 px-10 rounded-lg text-lg transition-all duration-300 flex items-center gap-2 transform hover:scale-105 hover:shadow-xl hover:shadow-[#FFCC00]/50">
+            <Link href="/signin" className="group bg-[#FFCC00] text-[#090040] hover:bg-white font-bold py-4 px-10 rounded-lg text-lg transition-all duration-300 flex items-center gap-2 transform hover:scale-105 hover:shadow-xl hover:shadow-[#FFCC00]/50">
               Get Started
               <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform duration-300" />
             </Link>

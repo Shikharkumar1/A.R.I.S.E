@@ -105,50 +105,50 @@ const UploadAudio: React.FC<{ onUploadSuccess: () => void }> = ({ onUploadSucces
   const isTranscribeDisabled = !selectedFile || isTranscribing || getFileSizeMB(selectedFile) > 25;
 
   return (
-    <Card className="bg-white/5 backdrop-blur-sm border-[#B13BFF]/30 shadow-2xl hover:border-[#B13BFF] transition-all duration-300">
-      <CardHeader className="border-b border-[#B13BFF]/20 pb-6">
+    <Card className="bg-[#1a0b2e] backdrop-blur-sm border-[#B13BFF]/50 shadow-2xl hover:border-[#B13BFF] transition-all duration-300">
+      <CardHeader className="border-b border-[#B13BFF]/30 pb-6">
         <CardTitle className="text-2xl font-semibold text-white">Upload Audio</CardTitle>
-        <CardDescription className="text-white/50 font-light">
+        <CardDescription className="text-gray-300 font-light">
           Select an audio file to transcribe
         </CardDescription>
       </CardHeader>
       <CardContent className="p-6">
         <div className="flex flex-col gap-5">
           <div className="space-y-2">
-            <Label htmlFor="audio-file" className="text-white/70 font-medium text-sm">Audio File</Label>
+            <Label htmlFor="audio-file" className="text-gray-300 font-medium text-sm">Audio File</Label>
             <Input
               id="audio-file"
               type="file"
               accept="audio/*"
               onChange={handleFileChange}
-              className="bg-white/5 border-[#B13BFF]/30 text-white file:bg-[#B13BFF] file:text-white file:border-0 file:mr-4 file:py-2 file:px-4 file:rounded-md file:font-medium hover:bg-white/10 hover:border-[#B13BFF] transition-all duration-300 font-light cursor-pointer"
+              className="bg-[#0d0525] border-[#B13BFF]/50 text-white file:bg-[#B13BFF] file:text-white file:border-0 file:mr-4 file:py-2 file:px-4 file:rounded-md file:font-medium hover:bg-[#16092d] hover:border-[#B13BFF] transition-all duration-300 font-light cursor-pointer"
             />
           </div>
           {selectedFile && (
-            <div className="bg-white/5 border border-[#B13BFF]/30 rounded-lg p-4 hover:border-[#B13BFF] transition-colors duration-300">
-              <p className="text-white/80 font-light">
-                <span className="text-[#FFCC00] font-medium">Selected:</span> {selectedFile.name}
+            <div className="bg-[#0d0525] border-2 border-[#B13BFF]/50 rounded-lg p-4 hover:border-[#B13BFF] transition-colors duration-300">
+              <p className="text-white font-normal">
+                <span className="text-[#FFCC00] font-semibold">Selected:</span> {selectedFile.name}
               </p>
-              <p className="text-white/50 text-sm font-light mt-1">
+              <p className="text-gray-400 text-sm font-normal mt-1">
                 {getFileSizeMB(selectedFile).toFixed(2)} MB
               </p>
             </div>
           )}
           {monitoredFiles.length > 0 && (
             <div className="space-y-3">
-              <h3 className="text-lg font-medium text-white">Monitored Files</h3>
+              <h3 className="text-lg font-semibold text-white">Monitored Files</h3>
               <div className="space-y-2">
                 {monitoredFiles.map((file) => (
-                  <div key={file.name} className="flex items-center justify-between bg-white/5 border border-[#B13BFF]/30 rounded-lg p-4 hover:bg-white/10 hover:border-[#B13BFF] transition-all duration-300 transform hover:-translate-y-0.5">
+                  <div key={file.name} className="flex items-center justify-between bg-[#0d0525] border-2 border-[#B13BFF]/50 rounded-lg p-4 hover:bg-[#16092d] hover:border-[#B13BFF] transition-all duration-300 transform hover:-translate-y-0.5">
                     <div className="flex-1 min-w-0">
-                      <p className="text-white/80 font-light truncate">{file.name}</p>
-                      <p className="text-white/50 text-sm font-light">
+                      <p className="text-white font-normal truncate">{file.name}</p>
+                      <p className="text-gray-400 text-sm font-normal">
                         {(file.size / (1024 * 1024)).toFixed(2)} MB
                       </p>
                     </div>
                     <Button 
                       onClick={() => handleMonitoredFileSelect(file.name)}
-                      className="ml-4 bg-[#B13BFF] hover:bg-[#FFCC00] hover:text-[#090040] text-white border-0 font-medium transition-all duration-300 transform hover:scale-105"
+                      className="ml-4 bg-[#B13BFF] hover:bg-[#9D2FE6] text-white border-0 font-medium transition-all duration-300 transform hover:scale-105"
                     >
                       Select
                     </Button>
@@ -160,12 +160,12 @@ const UploadAudio: React.FC<{ onUploadSuccess: () => void }> = ({ onUploadSucces
           <Button 
             onClick={handleTranscribe} 
             disabled={isTranscribeDisabled}
-            className="bg-[#FFCC00] text-[#090040] hover:bg-white hover:shadow-lg hover:shadow-[#FFCC00]/50 font-bold py-6 text-base transition-all duration-300 transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
+            className="bg-[#FFCC00] text-[#090040] hover:bg-[#FFD633] hover:shadow-lg hover:shadow-[#FFCC00]/50 font-bold py-6 text-base transition-all duration-300 transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
           >
             {isTranscribing ? 'Transcribing...' : 'Transcribe Audio'}
           </Button>
           {selectedFile && getFileSizeMB(selectedFile) > 25 && (
-            <p className="text-red-300 bg-red-500/10 border border-red-500/20 rounded-lg p-3 text-sm font-light">
+            <p className="text-red-300 bg-red-900/20 border-2 border-red-500/50 rounded-lg p-3 text-sm font-normal">
               File size exceeds 25 MB. Please use a smaller file.
             </p>
           )}
