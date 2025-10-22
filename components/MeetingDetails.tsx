@@ -18,6 +18,7 @@ import {
   Download,
 } from "lucide-react"
 import CategoryCard from "@/components/CategoryCard"
+import EmailGenerator from "@/components/EmailGenerator"
 import axios from "axios"
 import { useToast } from "@/hooks/use-toast"
 
@@ -95,13 +96,23 @@ export default function MeetingDetails({ data }: MeetingDetailsProps) {
           <h1 className="text-3xl font-semibold text-white mb-2">{data.name}</h1>
           <p className="text-white/50 font-light">{data.description}</p>
         </div>
-        <button
-          onClick={handleExport}
-          className="flex items-center px-5 py-2.5 bg-[#FFCC00] hover:bg-white text-[#090040] rounded-lg font-bold transition-all duration-300 transform hover:scale-105 hover:shadow-lg hover:shadow-[#FFCC00]/50"
-        >
-          <Download className="w-5 h-5 mr-2" />
-          Export as DOCX
-        </button>
+        <div className="flex gap-2">
+          <EmailGenerator 
+            meetingId={data.id} 
+            attendees={data.breakdown.Attendees.map((att, idx) => ({
+              id: `${data.id}-${idx}`,
+              name: att.name,
+              role: att.role
+            })) || []} 
+          />
+          <button
+            onClick={handleExport}
+            className="flex items-center px-5 py-2.5 bg-[#B13BFF] hover:bg-[#9D2FE6] text-white rounded-lg font-bold transition-all duration-300 transform hover:scale-105 hover:shadow-lg hover:shadow-[#B13BFF]/50"
+          >
+            <Download className="mr-2" size={18} />
+            Export Details
+          </button>
+        </div>
       </div>
       
       <Tabs defaultValue="summary" className="space-y-6">
